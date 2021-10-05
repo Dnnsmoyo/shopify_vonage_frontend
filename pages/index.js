@@ -1,54 +1,38 @@
-import { EmptyState, Layout, Page } from '@shopify/polaris';
-import { ResourcePicker, TitleBar } from '@shopify/app-bridge-react';
-import store from 'store-js';
-import ResourceListWithProducts from '../components/ResourceList';
+import axios from 'axios';
+import ListGroup from 'react-bootstrap/ListGroup';
+import Card from 'react-bootstrap/Card';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import react from 'react';
 
-const img = 'https://cdn.shopify.com/s/files/1/0757/9955/files/empty-state.svg';
+const Index=()=> {
+const [post, setPost] = React.useState(null)
 
-class Index extends React.Component {
-  state = { open: false };
-  render() {
-    const emptyState = !store.get('ids');
+const baseURL="https://localhost:8000/api/orders?shopname=denscientist.myshopify.com"
+React.useEffect(() => {
+    axios.get(baseURL, { headers: {'Access-Control-Allow-Origin': '*'}}).then((response) => {
+      setPost(response.data);
+    });
+  }, []);
     return (
-      <Page>
-        <TitleBar
-          title="Sample App"
-          primaryAction={{
-          content: 'Select products',
-          onAction: () => this.setState({ open: true }),
-        }} />
-        <ResourcePicker
-          resourceType="Product"
-          showVariants={false}
-          open={this.state.open}
-          onSelection={(resources) => this.handleSelection(resources)}
-          onCancel={() => this.setState({ open: false })}
-        />
-        {emptyState ? (
-          <Layout>
-            <EmptyState
-              heading="Discount your products temporarily"
-              action={{
-                content: 'Select products',
-                onAction: () => this.setState({ open: true }),
-              }}
-              image={img}
-            >
-              <p>Select products to change their price temporarily.</p>
-            </EmptyState>
-          </Layout>
-        ) : (
-            <ResourceListWithProducts />
-          )}
-      </Page>
-    );
-  }
+    <div>
+    <center><h1>Real time data board</h1></center>
 
-  handleSelection = (resources) => {
-    const idsFromResources = resources.selection.map((product) => product.id);
-    this.setState({ open: false });
-    store.set('ids', idsFromResources);
-  };
+      <Card>
+        <Card.Img variant="top" src="holder.js/100px160" />
+        <Card.Body>
+        {post}
+          <Card.Title>Activity stream</Card.Title>
+          <Card.Text>
+            {post.data}.
+          </Card.Text>
+        </Card.Body>
+      </Card>
+    </Col>
+
+</div>
+    );
+
 }
 
-export default Index;
